@@ -1,0 +1,71 @@
+schema {
+  query: RootQuery
+  mutation: RootMutation
+}
+
+type RootQuery {
+  getJunctionByIDQuery(id: String!): Junction
+  getQuestionnaireByIDQuery(id: String!): Questionnaire
+  getAllQuestionnairesQuery: [Questionnaire]
+  getQuestionByIDQuery(id: String!): Question
+  getJunctionsByQuestionnaireIDQuery(id: String!): [Junction]
+  getAllJunctions: [Junction]
+  getAllQuestions: [Question]
+  getQuestionsByIDsQuery(ids: [String!]): [Question]
+  getUserAnswersQuery(username: String!, questionIds: [String!]!): [UserAnswer]
+  getAllUsers: [User]
+}
+
+type Junction {
+  id: String!
+  question_id: Int!
+  questionnaire_id: Int!
+  priority: Int!
+}
+
+type Questionnaire {
+  id: String!
+  name: String!
+}
+
+type Question {
+  id: String!
+  question: JSONObject!
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+type UserAnswer {
+  question_id: String!
+  answer: String
+}
+
+type User {
+  id: String!
+  username: String!
+  role: String!
+}
+
+type RootMutation {
+  createUser(username: String!, password: String!): User
+  loginUser(username: String!, password: String!): User
+  submitAnswers(input: SubmitAnswersInput!): SubmitAnswersPayload
+}
+
+type SubmitAnswersPayload {
+  success: Boolean!
+  message: String
+}
+
+input SubmitAnswersInput {
+  username: String!
+  answers: [SubmitAnswerInput!]!
+}
+
+input SubmitAnswerInput {
+  questionId: String!
+  answer: String!
+}

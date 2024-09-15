@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-bg-color: #111111;
+  --primary-accent-color: #355eb8;
+  --secondary-accent-color: #13468b;
+  --primary-gradient-color: #000d45;
+}
+
+#root {
+  height: 100%;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  z-index: 1000;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(155, 155, 155);
+  border-radius: 20px;
+  z-index: 1000;
+}
