@@ -7,7 +7,7 @@
     "dev": "concurrently \"next dev\" \"yarn typed-scss-modules src --watch\"",
     "generate-schema": "node --loader ts-node/esm ./src/app/graphql/generateSchema.ts",
     "relay": "relay-compiler",
-    "build": "next build",
+    "build": "relay-compiler && next build",
     "start": "next start",
     "lint": "next lint"
   },
