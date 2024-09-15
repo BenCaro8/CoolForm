@@ -20,6 +20,9 @@ export const pool = new Pool({
   database: process.env.DB_DB,
   password: process.env.DB_PASSWORD,
   port: 5432,
+  ssl: {
+    rejectUnauthorized: false,  // May need depending on SSL setup
+  },
 });
 
 const schema = new GraphQLSchema({

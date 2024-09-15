@@ -69,8 +69,6 @@ const Questionnaire: FC<Props> = ({ params }) => {
       return;
     }
 
-    console.log(answers);
-
     const input = {
       username: user.username,
       answers: Object.entries(answers).map(([questionId, answer]) => ({
