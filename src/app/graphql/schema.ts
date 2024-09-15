@@ -21,7 +21,7 @@ export const pool = new Pool({
   password: process.env.DB_PASSWORD,
   port: 5432,
   ssl: {
-    rejectUnauthorized: false,  // May need depending on SSL setup
+    rejectUnauthorized: false,
   },
 });
 
