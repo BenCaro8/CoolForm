@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export type Selection = {
   children: ReactNode;
-  onClick?: () => {};
+  onClick?: () => void;
   url?: string;
 };
 
