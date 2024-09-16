@@ -1,10 +1,7 @@
 import {
-    GraphQLNonNull,
     GraphQLFieldConfig,
     GraphQLList,
-    GraphQLString
 } from 'graphql';
-import { QuestionnaireType, JunctionType, QuestionType, UserAnswerType } from '../types/questionnaireTypes';
 import { pool } from './../schema';
 import { UserType } from '../types/UserType';
 

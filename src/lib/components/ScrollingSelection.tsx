@@ -5,8 +5,8 @@ import Link from "next/link";
 
 export type Selection = {
   children: ReactNode;
-  url: string;
   onClick?: () => {};
+  url?: string;
 };
 
 type Props = {
@@ -16,18 +16,34 @@ type Props = {
 const ScrollingSelection: FC<Props> = ({ selections }) => {
   return (
     <div className={styles.scrollContainer}>
-      {selections.map((selection, index) => (
-        <Link
-          key={index}
-          className={styles.selectionItem}
-          role="button"
-          tabIndex={0}
-          href={selection?.url}
-          onClick={selection.onClick}
-        >
-          {selection.children}
-        </Link>
-      ))}
+      {selections.map((selection, index) => {
+        if (selection?.url) {
+          return (
+            <Link
+              key={index}
+              className={styles.selectionItem}
+              role="button"
+              tabIndex={0}
+              href={selection.url}
+              onClick={selection.onClick}
+            >
+              {selection.children}
+            </Link>
+          );
+        } else {
+          return (
+            <a
+              key={index}
+              className={styles.selectionItem}
+              role="button"
+              tabIndex={0}
+              onClick={selection.onClick}
+            >
+              {selection.children}
+            </a>
+          );
+        }
+      })}
     </div>
   );
 };

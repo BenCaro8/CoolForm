@@ -109,7 +109,7 @@ const Login: FC = () => {
           />
         </div>
         <div className="ml-auto">
-          <Button handleClick={submitLogin} disabled={isSubmitDisabled}>
+          <Button handleClick={submitLogin} disabled={isSubmitDisabled} right>
             <Title size="small">Sign In</Title>
           </Button>
         </div>

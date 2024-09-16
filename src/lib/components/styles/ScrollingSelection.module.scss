@@ -15,11 +15,11 @@
     align-items: center;
 
     &:hover {
-        background-color: #e0e0e0;
+        background-color: var(--primary-accent-color);
     }
 
     &:focus {
         outline: none;
-        box-shadow: 0 0 0 2px #3b99fc;
+        box-shadow: 0 0 0 2px white;
     }
 }

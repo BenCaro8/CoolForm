@@ -64,6 +64,21 @@ const Questionnaire: FC<Props> = ({ params }) => {
     submitAnswersMutation
   );
 
+  const filteredJunctions = questionJunctionData.getAllJunctions?.filter(
+    (junction) => junction?.questionnaire_id.toString() === questionnaireId
+  );
+
+  const currentQuestionIds =
+    filteredJunctions?.map((junction) => junction!.question_id.toString()) ||
+    [];
+
+  const filteredAnswers = Object.entries(answers)
+    .filter(([questionId]) => currentQuestionIds.includes(questionId))
+    .map(([questionId, answer]) => ({
+      questionId,
+      answer: Array.isArray(answer) ? answer.join(",") : answer,
+    }));
+
   const handleSubmit = useCallback(() => {
     if (!user) {
       return;
@@ -71,10 +86,7 @@ const Questionnaire: FC<Props> = ({ params }) => {
 
     const input = {
       username: user.username,
-      answers: Object.entries(answers).map(([questionId, answer]) => ({
-        questionId,
-        answer: Array.isArray(answer) ? answer.join(",") : answer,
-      })),
+      answers: filteredAnswers,
     };
 
     commit({
@@ -92,14 +104,28 @@ const Questionnaire: FC<Props> = ({ params }) => {
     });
   }, [answers]);
 
-  const filteredJunctions = questionJunctionData?.getAllJunctions?.filter(
-    (junction) => junction?.questionnaire_id.toString() === questionnaireId
-  );
+  const isDisabled =
+    isMutationInFlight ||
+    Object.entries(filteredAnswers).some(([_, answerObj]) =>
+      Array.isArray(answerObj.answer)
+        ? answerObj.answer.length === 0
+        : answerObj.answer.trim().length === 0
+    );
+
+  const sortedJunctions = filteredJunctions?.toSorted((a, b) => {
+    return (a.priority || 0) - (b.priority || 0);
+  });
+
+  const sortedQuestions = sortedJunctions?.map((junction, index) => {
+    return questionJunctionData.getAllQuestions?.find(
+      (question) => question.id === junction.question_id.toString()
+    );
+  });
 
   return (
-    <Section center flexCol>
-      <Title>{questionnaireTitle}</Title>
-      {questionJunctionData?.getAllQuestions?.map((questionParam, index) => {
+    <Section flexCol>
+      <Title center>{questionnaireTitle}</Title>
+      {sortedQuestions?.map((questionParam, index) => {
         const question = questionParam?.question as Question;
         const id = questionParam?.id;
         if (
@@ -123,7 +149,7 @@ const Questionnaire: FC<Props> = ({ params }) => {
           );
         }
       })}
-      <Button handleClick={handleSubmit} disabled={isMutationInFlight}>
+      <Button handleClick={handleSubmit} disabled={isDisabled} right>
         <Title size="small">Submit</Title>
       </Button>
     </Section>

@@ -9,10 +9,11 @@ type RootQuery {
   getAllQuestionnairesQuery: [Questionnaire]
   getQuestionByIDQuery(id: String!): Question
   getJunctionsByQuestionnaireIDQuery(id: String!): [Junction]
-  getAllJunctions: [Junction]
-  getAllQuestions: [Question]
+  getAllJunctions: [Junction!]
+  getAllQuestions: [Question!]
   getQuestionsByIDsQuery(ids: [String!]): [Question]
   getUserAnswersQuery(username: String!, questionIds: [String!]!): [UserAnswer]
+  getAllUserAnswersQuery(username: String!): [UserAnswer]
   getAllUsers: [User]
 }
 
@@ -39,6 +40,7 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 scalar JSONObject
 
 type UserAnswer {
+  user_username: String!
   question_id: String!
   answer: String
 }

@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FC, useEffect } from "react";
+import { ChangeEvent, FC, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../store";
 import { graphql, useLazyLoadQuery } from "react-relay";
 import { Answer, setAnswer } from "../slices/sessionSlice";
@@ -33,7 +33,8 @@ const MultiChoiceQuestion: FC<Props> = ({ id, question }) => {
   const userAnswersData =
     useLazyLoadQuery<MultiChoiceQuestion_GetUserAnswersQuery>(
       getUserAnswersQuery,
-      { username: user?.username || "", questionIds: [id] }
+      { username: user?.username || "", questionIds: [id] },
+      { fetchPolicy: "network-only" }
     );
   const questionText = question.question;
   const allowMultipleSelections = questionText.includes(

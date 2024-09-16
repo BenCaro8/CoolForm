@@ -43,6 +43,7 @@ export const JunctionType = new GraphQLObjectType({
 export const UserAnswerType = new GraphQLObjectType({
     name: 'UserAnswer',
     fields: {
+        user_username: { type: new GraphQLNonNull(GraphQLString) },
         question_id: { type: new GraphQLNonNull(GraphQLString) },
         answer: { type: GraphQLString },
     },

@@ -34,7 +34,8 @@ const InputQuestion: FC<Props> = ({ id, question, placeholder, textColor }) => {
 
   const userAnswersData = useLazyLoadQuery<InputQuestion_GetUserAnswersQuery>(
     getUserAnswersQuery,
-    { username: user?.username || "", questionIds: [id] }
+    { username: user?.username || "", questionIds: [id] },
+    { fetchPolicy: "network-only" }
   );
 
   useEffect(() => {

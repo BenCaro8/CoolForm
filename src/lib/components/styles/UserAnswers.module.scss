@@ -1,0 +1,11 @@
+.wrapper {
+    margin: 10px 20px;
+}
+
+.textBlack {
+    color: black;
+
+    &>* {
+        color: black;
+    }
+}

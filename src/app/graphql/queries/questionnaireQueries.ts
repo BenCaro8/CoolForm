@@ -85,7 +85,7 @@ export const getJunctionsByQuestionnaireIDQuery: GraphQLFieldConfig<any, any> = 
 };
 
 export const getAllJunctions: GraphQLFieldConfig<any, any> = {
-    type: new GraphQLList(JunctionType),
+    type: new GraphQLList(new GraphQLNonNull(JunctionType)),
     resolve: async () => {
         const client = await pool.connect();
         try {
@@ -115,7 +115,7 @@ export const getQuestionsByIDsQuery: GraphQLFieldConfig<any, any> = {
 };
 
 export const getAllQuestions: GraphQLFieldConfig<any, any> = {
-    type: new GraphQLList(QuestionType),
+    type: new GraphQLList(new GraphQLNonNull(QuestionType)),
     resolve: async () => {
         const client = await pool.connect();
         try {
@@ -147,6 +147,25 @@ export const getUserAnswersQuery = {
     },
 };
 
+export const getAllUserAnswersQuery = {
+    type: new GraphQLList(UserAnswerType),
+    args: {
+        username: { type: new GraphQLNonNull(GraphQLString) },
+    },
+    resolve: async (_: any, { username }: any) => {
+        const client = await pool.connect();
+        try {
+            const result = await client.query(
+                `SELECT question_id, answer FROM user_answers WHERE user_username = $1`,
+                [username]
+            );
+            return result.rows;
+        } finally {
+            client.release();
+        }
+    },
+};
+
 const queries = {
     getJunctionByIDQuery,
     getQuestionnaireByIDQuery,
@@ -156,7 +175,8 @@ const queries = {
     getAllJunctions,
     getAllQuestions,
     getQuestionsByIDsQuery,
-    getUserAnswersQuery
+    getUserAnswersQuery,
+    getAllUserAnswersQuery
 };
 
 export default queries;
