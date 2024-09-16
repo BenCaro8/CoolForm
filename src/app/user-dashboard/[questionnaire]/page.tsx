@@ -106,11 +106,13 @@ const Questionnaire: FC<Props> = ({ params }) => {
 
   const isDisabled =
     isMutationInFlight ||
-    Object.entries(filteredAnswers).some(([_, answerObj]) =>
-      Array.isArray(answerObj.answer)
-        ? answerObj.answer.length === 0
-        : answerObj.answer.trim().length === 0
-    );
+    Object.entries(filteredAnswers).some(([_, answerObj]) => {
+      if (answerObj && answerObj?.answer) {
+        Array.isArray(answerObj.answer)
+          ? answerObj.answer.length === 0
+          : answerObj.answer.trim().length === 0;
+      }
+    });
 
   const sortedJunctions = filteredJunctions?.toSorted((a, b) => {
     return (a.priority || 0) - (b.priority || 0);
