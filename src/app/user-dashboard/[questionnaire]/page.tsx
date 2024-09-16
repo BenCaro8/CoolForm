@@ -108,7 +108,7 @@ const Questionnaire: FC<Props> = ({ params }) => {
     isMutationInFlight ||
     Object.entries(filteredAnswers).some(([_, answerObj]) => {
       if (answerObj && answerObj?.answer) {
-        Array.isArray(answerObj.answer)
+        return Array.isArray(answerObj.answer)
           ? answerObj.answer.length === 0
           : answerObj.answer.trim().length === 0;
       }

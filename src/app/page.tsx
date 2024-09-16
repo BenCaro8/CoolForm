@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, SetStateAction, useEffect, useState } from "react";
 import { graphql, useMutation } from "react-relay";
 import { useAppSelector, useAppDispatch } from "../lib/store";
 import { User, setUser } from "../lib/slices/sessionSlice";
@@ -12,6 +12,10 @@ import {
   page_LoginMutation,
   page_LoginMutation$data,
 } from "./__generated__/page_LoginMutation.graphql";
+import {
+  page_CreateUserMutation,
+  page_CreateUserMutation$data,
+} from "./__generated__/page_CreateUserMutation.graphql";
 import { redirect } from "next/navigation";
 import styles from "./styles/page.module.scss";
 
@@ -25,12 +29,28 @@ const loginMutation = graphql`
   }
 `;
 
+const createUserMutation = graphql`
+  mutation page_CreateUserMutation($username: String!, $password: String!) {
+    createUser(username: $username, password: $password) {
+      id
+      username
+      role
+    }
+  }
+`;
+
 const Login: FC = () => {
   const user = useAppSelector((state) => state.session.user);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [commitMutation, isMutationInFlight] =
+  const [registerUsername, setRegisterUsername] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [commitSignInMutation, isSignInMutationInFlight] =
     useMutation<page_LoginMutation>(loginMutation);
+  const [commitCreateUserMutation, isCreateUserMutationInFlight] =
+    useMutation<page_CreateUserMutation>(createUserMutation);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -41,14 +61,12 @@ const Login: FC = () => {
     }
   }, [user]);
 
-  const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    setState: (value: SetStateAction<string>) => void
+  ) => {
     const value = event.target.value;
-    setUsername(value);
-  };
-
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setPassword(value);
+    setState(value);
   };
 
   const submitLogin = () => {
@@ -66,15 +84,88 @@ const Login: FC = () => {
     const criticalError = (err: Error) => {
       console.log(err);
     };
-    commitMutation({
+    commitSignInMutation({
       variables: { username, password },
       onCompleted: completed,
       onError: criticalError,
     });
   };
 
+  const createUser = () => {
+    const completed = (
+      res: page_CreateUserMutation$data,
+      errors: PayloadError[] | null
+    ) => {
+      if (res.createUser) {
+        dispatch(setUser(res.createUser as User));
+      }
+      if (errors) {
+        console.log(errors);
+      }
+    };
+    const criticalError = (err: Error) => {
+      console.log(err);
+    };
+    commitCreateUserMutation({
+      variables: { username: registerUsername, password: registerPassword },
+      onCompleted: completed,
+      onError: criticalError,
+    });
+  };
+
   const isSubmitDisabled =
-    isMutationInFlight || !username.trim() || !password.trim();
+    isSignInMutationInFlight || !username.trim() || !password.trim();
+
+  const isSignUpDisabled =
+    isCreateUserMutationInFlight ||
+    !registerUsername.trim() ||
+    !registerPassword.trim() ||
+    !confirmPassword.trim() ||
+    confirmPassword !== registerPassword;
+
+  if (isRegistering) {
+    return (
+      <Section style="m-4" center flexCol>
+        <Title fontFamily="Gugi" size="large" noMargin>
+          Register:
+        </Title>
+        <div className="center flex flex-col my-4">
+          <TextInput
+            placeholder="Username"
+            icon="user"
+            value={registerUsername}
+            handleOnChange={(event) =>
+              handleTextChange(event, setRegisterUsername)
+            }
+          />
+          <TextInput
+            placeholder="Password"
+            icon="password"
+            password
+            value={registerPassword}
+            handleOnChange={(event) =>
+              handleTextChange(event, setRegisterPassword)
+            }
+          />
+          <TextInput
+            placeholder="Confirm Password"
+            icon="password"
+            password
+            value={confirmPassword}
+            handleOnChange={(event) =>
+              handleTextChange(event, setConfirmPassword)
+            }
+            handleEnterPress={isSignUpDisabled ? undefined : createUser}
+          />
+        </div>
+        <div className="ml-auto flex flex-col">
+          <Button handleClick={createUser} disabled={isSignUpDisabled}>
+            <Title size="small">Sign Up</Title>
+          </Button>
+        </div>
+      </Section>
+    );
+  }
 
   return (
     <Section style="m-4" center>
@@ -97,21 +188,26 @@ const Login: FC = () => {
             placeholder="Username"
             icon="user"
             value={username}
-            handleOnChange={handleUsernameChange}
+            handleOnChange={(event) => handleTextChange(event, setUsername)}
           />
           <TextInput
             placeholder="Password"
             icon="password"
             password
             value={password}
-            handleOnChange={handlePasswordChange}
+            handleOnChange={(event) => handleTextChange(event, setPassword)}
             handleEnterPress={isSubmitDisabled ? undefined : submitLogin}
           />
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex flex-col">
           <Button handleClick={submitLogin} disabled={isSubmitDisabled} right>
             <Title size="small">Sign In</Title>
           </Button>
+          <div className="mt-4">
+            <Button handleClick={() => setIsRegistering(true)} right>
+              <Title size="small">Register</Title>
+            </Button>
+          </div>
         </div>
       </div>
     </Section>
